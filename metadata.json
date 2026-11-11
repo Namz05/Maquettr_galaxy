@@ -1,0 +1,6 @@
+{
+  "name": "Galaxy Hôtel - Gestion Hôtelière",
+  "description": "Plateforme web professionnelle et moderne de gestion hôtelière pour le Galaxy Hôtel : Hébergement, Restaurant, Finances et Stocks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
