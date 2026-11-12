@@ -17,6 +17,7 @@ export const Topbar: React.FC = () => {
     'finances-reports': { title: 'Rapports financiers' },
     'stock-status': { title: 'Gestion du stock' },
     'stock-movements': { title: 'Mouvements de stock' },
+    'hr-staff': { title: 'Ressources Humaines' },
   };
 
   const currentMeta = screenMeta[currentScreen] || { title: 'Tableau de bord' };

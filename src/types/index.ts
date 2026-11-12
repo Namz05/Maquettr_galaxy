@@ -1,5 +1,5 @@
 export type RoomCategory = 'Standard' | 'Mini Suite (VIP)';
-export type RoomFloor = 'Rez-de-chaussée' | '1er Étage';
+export type RoomFloor = 'Rez-de-chaussée' | '1er Étage' | '2ème Étage' | '3ème Étage';
 export type RoomStatus = 'Disponible' | 'Occupée' | 'Réservée' | 'Hors service' | 'En nettoyage';
 
 export interface RoomGuest {
@@ -166,7 +166,22 @@ export type ScreenId =
   | 'finances-transactions'
   | 'finances-reports'
   | 'stock-status'
-  | 'stock-movements';
+  | 'stock-movements'
+  | 'hr-staff';
+
+export interface Employee {
+  id: string;
+  matricule: string;
+  name: string;
+  role: string;
+  department: 'Réception' | 'Hébergement & Ménage' | 'Restaurant & Bar' | 'Cuisine' | 'Sécurité & Technique' | 'Direction';
+  phone: string;
+  email: string;
+  hireDate: string;
+  salary: number;
+  status: 'Actif' | 'En congé' | 'Inactif';
+  shift: 'Matin (07h-15h)' | 'Soir (15h-23h)' | 'Nuit (23h-07h)' | 'Journée (08h-17h)';
+}
 
 export interface ToastMessage {
   id: string;

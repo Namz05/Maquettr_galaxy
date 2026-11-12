@@ -11,6 +11,7 @@ import {
   IconChartBar,
   IconPackages,
   IconArrowsExchange,
+  IconUsers,
   IconLogout,
   IconChevronLeft,
   IconChevronRight,
@@ -105,6 +106,16 @@ export const Sidebar: React.FC = () => {
           id: 'stock-movements',
           label: 'Mouvements',
           icon: <IconArrowsExchange className="w-5 h-5" stroke={1.75} />,
+        },
+      ],
+    },
+    {
+      sectionTitle: 'RESSOURCES HUMAINES',
+      items: [
+        {
+          id: 'hr-staff',
+          label: 'Personnel & RH',
+          icon: <IconUsers className="w-5 h-5" stroke={1.75} />,
         },
       ],
     },

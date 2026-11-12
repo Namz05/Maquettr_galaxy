@@ -5,7 +5,6 @@ import {
   IconReceipt,
   IconBed,
   IconCircleCheck,
-  IconPercentage,
   IconArrowRight,
   IconArrowUpRight,
   IconArrowDownRight,
@@ -22,7 +21,6 @@ import {
 
 export const Screen2Dashboard: React.FC = () => {
   const {
-    rooms,
     reservations,
     transactions,
     restaurantSales,
@@ -97,12 +95,6 @@ export const Screen2Dashboard: React.FC = () => {
     return transactions.filter((t) => t.date === selectedDate);
   }, [transactions, selectedDate]);
 
-  // Room status stats (Disponible ou Occupée)
-  const totalRooms = rooms.length;
-  const availableRooms = rooms.filter((r) => r.status === 'Disponible').length;
-  const occupiedRooms = totalRooms - availableRooms;
-  const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
-
   const formattedDateFull = formatFrenchDateFull(selectedDate);
   const formattedDateShort = formatFrenchDateShort(selectedDate);
 
@@ -128,101 +120,36 @@ export const Screen2Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* 5 Key Stat Cards dynamically calculated for the selected date */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        {/* Card 1: CA du jour */}
-        <div className="bg-white p-4 rounded-2xl border border-[#E5EAF1] shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-[#718096] mb-2">
-            <span className="text-xs font-semibold">CA du jour</span>
+      {/* 2 Cartes : CA du mois & Dépenses effectuées */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Card 1: CA du mois */}
+        <div className="bg-white p-5 rounded-2xl border border-[#E5EAF1] shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-[#718096] mb-3">
+            <span className="text-xs font-semibold">CA du mois</span>
             <div className="w-8 h-8 rounded-lg bg-[#4C97DB]/10 text-[#4C97DB] flex items-center justify-center">
               <IconTrendingUp stroke={1.75} className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-xl font-bold text-[#263445] font-mono tabular-nums leading-none">
-              {dayRevenues.toLocaleString('fr-FR')}{' '}
+            <div className="text-2xl font-bold text-[#263445] font-mono tabular-nums leading-none">
+              {monthRevenues.toLocaleString('fr-FR')}{' '}
               <span className="text-xs font-sans text-[#718096]">FCFA</span>
             </div>
           </div>
         </div>
 
-        {/* Card 2: Dépenses du jour */}
-        <div className="bg-white p-4 rounded-2xl border border-[#E5EAF1] shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-[#718096] mb-2">
-            <span className="text-xs font-semibold">Dépenses du jour</span>
+        {/* Card 2: Dépenses effectuées */}
+        <div className="bg-white p-5 rounded-2xl border border-[#E5EAF1] shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-[#718096] mb-3">
+            <span className="text-xs font-semibold">Dépenses effectuées</span>
             <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
               <IconReceipt stroke={1.75} className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-xl font-bold text-[#263445] font-mono tabular-nums leading-none">
-              {dayExpenses.toLocaleString('fr-FR')}{' '}
+            <div className="text-2xl font-bold text-[#263445] font-mono tabular-nums leading-none">
+              {monthExpenses.toLocaleString('fr-FR')}{' '}
               <span className="text-xs font-sans text-[#718096]">FCFA</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 3: Solde net du jour */}
-        <div className="bg-white p-4 rounded-2xl border border-[#E5EAF1] shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-[#718096] mb-2">
-            <span className="text-xs font-semibold">Solde net du jour</span>
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                dayNetResult >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-              }`}
-            >
-              {dayNetResult >= 0 ? (
-                <IconArrowUpRight stroke={1.75} className="w-4 h-4" />
-              ) : (
-                <IconArrowDownRight stroke={1.75} className="w-4 h-4" />
-              )}
-            </div>
-          </div>
-          <div>
-            <div
-              className={`text-xl font-bold font-mono tabular-nums leading-none ${
-                dayNetResult >= 0 ? 'text-emerald-600' : 'text-rose-600'
-              }`}
-            >
-              {dayNetResult > 0 ? '+' : ''}
-              {dayNetResult.toLocaleString('fr-FR')}{' '}
-              <span className="text-xs font-sans text-[#718096]">FCFA</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: Chambres occupées */}
-        <div className="bg-white p-4 rounded-2xl border border-[#E5EAF1] shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-[#718096] mb-2">
-            <span className="text-xs font-semibold">Chambres occupées</span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-              <IconBed stroke={1.75} className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-xl font-bold text-[#263445] font-mono tabular-nums leading-none">
-              {occupiedRooms} <span className="text-xs font-sans text-[#718096]">/ {totalRooms}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 5: Taux d'occupation */}
-        <div className="bg-white p-4 rounded-2xl border border-[#E5EAF1] shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-[#718096] mb-2">
-            <span className="text-xs font-semibold">Taux d'occupation</span>
-            <div className="w-8 h-8 rounded-lg bg-[#58A2F7]/10 text-[#58A2F7] flex items-center justify-center">
-              <IconPercentage stroke={1.75} className="w-4 h-4" />
-            </div>
-          </div>
-          <div>
-            <div className="text-xl font-bold text-[#263445] font-mono tabular-nums leading-none">
-              {occupancyRate}%
-            </div>
-            <div className="w-full bg-[#F5F8FC] rounded-full h-1.5 mt-2 overflow-hidden">
-              <div
-                className="bg-[#4C97DB] h-full rounded-full transition-all duration-500"
-                style={{ width: `${occupancyRate}%` }}
-              />
             </div>
           </div>
         </div>
@@ -433,61 +360,6 @@ export const Screen2Dashboard: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* ETATS DES CHAMBRES (En dessous complètement de la page) */}
-      <div className="bg-white p-5 rounded-2xl border border-[#E5EAF1] shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <div>
-            <h3 className="text-sm font-bold text-[#263445] tracking-wide">
-              ETATS DES CHAMBRES
-            </h3>
-          </div>
-
-          {/* Legend: Juste disponible ou occupée */}
-          <div className="flex items-center gap-4 text-xs font-medium">
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-md bg-emerald-500" />
-              <span className="text-[#263445]">Disponible ({availableRooms})</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-md bg-[#4C97DB]" />
-              <span className="text-[#263445]">Occupée ({occupiedRooms})</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 10 Rooms Mini Visual Matrix: Juste disponible ou occupée */}
-        <div className="grid grid-cols-5 sm:grid-cols-10 gap-2.5 pt-2">
-          {rooms.map((room) => {
-            const isAvailable = room.status === 'Disponible';
-            const color = isAvailable ? 'bg-emerald-500 text-white' : 'bg-[#4C97DB] text-white';
-
-            return (
-              <button
-                key={room.id}
-                onClick={() => setCurrentScreen('rooms')}
-                className={`h-11 rounded-xl flex flex-col items-center justify-center font-mono text-xs font-bold transition-transform hover:scale-105 ${color}`}
-                title={`Chambre ${room.number} - ${isAvailable ? 'Disponible' : 'Occupée'} (${room.category})`}
-              >
-                <span>{room.number}</span>
-                <span className="text-[9px] font-sans font-normal opacity-90 truncate max-w-[50px]">
-                  {room.category === 'Mini Suite (VIP)' ? 'VIP' : 'Std'}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-4 pt-3 border-t border-[#E5EAF1] flex justify-end items-center text-xs">
-          <button
-            onClick={() => setCurrentScreen('rooms')}
-            className="text-[#4C97DB] font-semibold hover:underline flex items-center gap-1"
-          >
-            <span>Gérer les chambres</span>
-            <IconArrowRight stroke={1.75} className="w-3.5 h-3.5" />
-          </button>
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ import {
   StockMovement,
   ToastMessage,
   RoomStatus,
+  Employee,
 } from '../types';
 import {
   initialRooms,
@@ -21,6 +22,7 @@ import {
   initialTransactions,
   initialStockItems,
   initialStockMovements,
+  initialEmployees,
 } from '../data/seedData';
 
 interface AppContextType {
@@ -42,6 +44,7 @@ interface AppContextType {
   transactions: FinancialTransaction[];
   stockItems: StockItem[];
   stockMovements: StockMovement[];
+  employees: Employee[];
 
   // Data operations
   addRoom: (room: Omit<Room, 'id'>) => void;
@@ -62,6 +65,11 @@ interface AppContextType {
   addStockItem: (item: Omit<StockItem, 'id'>) => void;
   addStockMovement: (movement: Omit<StockMovement, 'id' | 'ref' | 'dateTime'>) => void;
   performInventoryAdjustment: (itemId: string, location: 'Magasin' | 'Cuisine', countedQty: number, reason: string) => void;
+
+  // HR Operations
+  addEmployee: (emp: Omit<Employee, 'id'>) => void;
+  updateEmployee: (id: string, updates: Partial<Employee>) => void;
+  updateEmployeeStatus: (id: string, status: Employee['status']) => void;
 
   // Active Business Date
   selectedDate: string;
@@ -87,11 +95,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Local state initialized with seed or localStorage
   const [rooms, setRooms] = useState<Room[]>(() => {
-    const saved = localStorage.getItem('galaxy_rooms_1to10');
+    const saved = localStorage.getItem('galaxy_rooms_70');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length === 10) return parsed;
+        if (Array.isArray(parsed) && parsed.length === 70) return parsed;
       } catch (e) {}
     }
     return initialRooms;
@@ -137,9 +145,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saved ? JSON.parse(saved) : initialStockMovements;
   });
 
+  const [employees, setEmployees] = useState<Employee[]>(() => {
+    const saved = localStorage.getItem('galaxy_employees_v1');
+    return saved ? JSON.parse(saved) : initialEmployees;
+  });
+
   // Sync to localStorage
   useEffect(() => {
-    localStorage.setItem('galaxy_rooms_1to10', JSON.stringify(rooms));
+    localStorage.setItem('galaxy_employees_v1', JSON.stringify(employees));
+  }, [employees]);
+  useEffect(() => {
+    localStorage.setItem('galaxy_rooms_70', JSON.stringify(rooms));
   }, [rooms]);
 
   useEffect(() => {
@@ -553,6 +569,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addToast('info', 'Inventaire mis à jour', `Quantité ${location} ajustée à ${countedQty} ${item.unit}.`);
   };
 
+  const addEmployee = (newEmp: Omit<Employee, 'id'>) => {
+    const id = `emp-${Date.now()}`;
+    setEmployees((prev) => [...prev, { ...newEmp, id }]);
+    addToast('success', 'Employé ajouté', `${newEmp.name} a été enregistré dans le registre RH.`);
+  };
+
+  const updateEmployee = (id: string, updates: Partial<Employee>) => {
+    setEmployees((prev) =>
+      prev.map((emp) => (emp.id === id ? { ...emp, ...updates } : emp))
+    );
+    addToast('success', 'Fiche RH mise à jour', 'Les informations ont été enregistrées.');
+  };
+
+  const updateEmployeeStatus = (id: string, status: Employee['status']) => {
+    setEmployees((prev) =>
+      prev.map((emp) => (emp.id === id ? { ...emp, status } : emp))
+    );
+    addToast('info', 'Statut RH modifié', `Le statut a été passé à : ${status}`);
+  };
+
   const resetToDefaultData = () => {
     localStorage.clear();
     setRooms(initialRooms);
@@ -563,6 +599,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTransactions(initialTransactions);
     setStockItems(initialStockItems);
     setStockMovements(initialStockMovements);
+    setEmployees(initialEmployees);
     addToast('info', 'Données réinitialisées', 'Toutes les données de démonstration ont été restaurées.');
   };
 
@@ -585,6 +622,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         transactions,
         stockItems,
         stockMovements,
+        employees,
         addRoom,
         updateRoom,
         updateRoomStatus,
@@ -599,6 +637,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addStockItem,
         addStockMovement,
         performInventoryAdjustment,
+        addEmployee,
+        updateEmployee,
+        updateEmployeeStatus,
         selectedDate,
         setSelectedDate,
         toasts,

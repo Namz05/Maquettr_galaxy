@@ -15,6 +15,7 @@ import { Screen7Transactions } from './screens/Screen7Transactions';
 import { Screen8FinancialReports } from './screens/Screen8FinancialReports';
 import { Screen9StockStatus } from './screens/Screen9StockStatus';
 import { Screen10StockMovements } from './screens/Screen10StockMovements';
+import { Screen11HR } from './screens/Screen11HR';
 
 const MainLayout: React.FC = () => {
   const { currentScreen, isAuthenticated, sidebarCollapsed } = useApp();
@@ -50,6 +51,8 @@ const MainLayout: React.FC = () => {
         return <Screen9StockStatus />;
       case 'stock-movements':
         return <Screen10StockMovements />;
+      case 'hr-staff':
+        return <Screen11HR />;
       default:
         return <Screen2Dashboard />;
     }

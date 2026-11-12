@@ -6,8 +6,6 @@ import {
   IconSearch,
   IconFilter,
   IconPlus,
-  IconLayoutGrid,
-  IconList,
   IconUser,
   IconPhone,
   IconSparkles,
@@ -29,7 +27,6 @@ export const Screen3Rooms: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterFloor, setFilterFloor] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -129,28 +126,6 @@ export const Screen3Rooms: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* View Mode Toggle */}
-          <div className="flex items-center p-1 bg-[#F5F8FC] border border-[#E5EAF1] rounded-xl">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-lg transition-colors ${
-                viewMode === 'grid' ? 'bg-white text-[#4C97DB] shadow-xs' : 'text-[#718096]'
-              }`}
-              title="Affichage en Grille"
-            >
-              <IconLayoutGrid stroke={1.75} className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`p-1.5 rounded-lg transition-colors ${
-                viewMode === 'table' ? 'bg-white text-[#4C97DB] shadow-xs' : 'text-[#718096]'
-              }`}
-              title="Affichage en Tableau"
-            >
-              <IconList stroke={1.75} className="w-4 h-4" />
-            </button>
-          </div>
-
           {/* Add Room Button */}
           <button
             onClick={() => setIsAddModalOpen(true)}
@@ -196,8 +171,10 @@ export const Screen3Rooms: React.FC = () => {
             className="text-xs bg-[#F5F8FC] border border-[#E5EAF1] rounded-xl px-3 py-2 text-[#263445] focus:outline-none focus:ring-2 focus:ring-[#4C97DB]/20"
           >
             <option value="all">Tous niveaux</option>
-            <option value="Rez-de-chaussée">Rez-de-chaussée (Chambres 1 à 5)</option>
-            <option value="1er Étage">1er Étage (Chambres 6 à 10)</option>
+            <option value="Rez-de-chaussée">Rez-de-chaussée</option>
+            <option value="1er Étage">1er Étage</option>
+            <option value="2ème Étage">2ème Étage</option>
+            <option value="3ème Étage">3ème Étage</option>
           </select>
 
           {/* Status Filter */}
@@ -230,166 +207,102 @@ export const Screen3Rooms: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Rooms View (Grid or Table) */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {filteredRooms.map((room) => {
-            const isOccupied = room.status === 'Occupée';
-            return (
-              <div
-                key={room.id}
-                className="bg-white rounded-2xl border border-[#E5EAF1] p-4 shadow-xs hover:border-[#4C97DB]/50 transition-all flex flex-col justify-between"
-              >
-                <div>
-                  {/* Card Header: Room Number & Category Badge */}
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl font-bold font-mono text-[#263445]">
-                          Ch. {room.number}
-                        </span>
-                        {room.category === 'Mini Suite (VIP)' && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
-                            VIP
-                          </span>
-                        )}
+      {/* Liste des chambres sous forme de tableau horizontal */}
+      <div className="bg-white rounded-2xl border border-[#E5EAF1] shadow-xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#F5F8FC] text-[#718096] border-b border-[#E5EAF1] uppercase font-semibold text-[11px]">
+              <tr>
+                <th className="py-3.5 px-4">Chambre</th>
+                <th className="py-3.5 px-4">Catégorie</th>
+                <th className="py-3.5 px-4">Niveau</th>
+                <th className="py-3.5 px-4">Tarif nuitée</th>
+                <th className="py-3.5 px-4">Capacité</th>
+                <th className="py-3.5 px-4">Statut</th>
+                <th className="py-3.5 px-4">Occupant / Remarque</th>
+                <th className="py-3.5 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E5EAF1] text-[#263445]">
+              {filteredRooms.map((room) => (
+                <tr key={room.id} className="hover:bg-[#F5F8FC]/60 transition-colors">
+                  <td className="py-3.5 px-4 font-bold font-mono text-sm">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-[#4C97DB]/15 text-[#4C97DB] font-bold font-mono text-xs flex items-center justify-center">
+                        {room.number}
                       </div>
-                      <p className="text-xs text-[#718096]">
-                        {room.category} · {room.floor}
-                      </p>
+                      <span>Ch. {room.number}</span>
                     </div>
-                    {getStatusBadge(room.status)}
-                  </div>
-
-                  {/* Pricing and Capacity */}
-                  <div className="flex items-center justify-between text-xs py-2 border-y border-[#E5EAF1]/70 mb-3 font-mono">
-                    <span className="font-bold text-[#263445]">
-                      {room.price.toLocaleString('fr-FR')} FCFA <span className="text-[10px] font-normal text-[#718096]">/ nuit</span>
-                    </span>
-                    <span className="text-[#718096] font-sans">
-                      {room.capacity} pers. max
-                    </span>
-                  </div>
-
-                  {/* Guest Info (if occupied) or Cleaned note */}
-                  {isOccupied && room.currentGuest ? (
-                    <div className="bg-[#F5F8FC] p-2.5 rounded-xl border border-[#E5EAF1] mb-3 text-xs">
-                      <div className="flex items-center gap-1.5 font-semibold text-[#263445] truncate">
-                        <IconUser stroke={1.75} className="w-3.5 h-3.5 text-[#4C97DB] shrink-0" />
-                        <span className="truncate">{room.currentGuest.name}</span>
-                      </div>
-                      <div className="text-[11px] text-[#718096] mt-1 flex justify-between">
-                        <span>Séjour: {room.currentGuest.checkIn.slice(5)} au {room.currentGuest.checkOut.slice(5)}</span>
-                        {room.currentGuest.folioBalance ? (
-                          <span className="font-mono text-amber-700 font-semibold">
-                            +{room.currentGuest.folioBalance.toLocaleString('fr-FR')} F
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-[11px] text-[#718096] mb-3 min-h-[36px] flex items-center">
-                      {room.notes ? (
-                        <span className="italic text-amber-700 line-clamp-2">{room.notes}</span>
-                      ) : room.lastCleaned ? (
-                        <span>Nettoyé : {room.lastCleaned}</span>
-                      ) : (
-                        <span>Prête pour attribution</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Bottom Actions */}
-                <div className="pt-2 border-t border-[#E5EAF1] flex items-center justify-between gap-2">
-                  <button
-                    onClick={() => setSelectedRoom(room)}
-                    className="flex-1 py-1.5 px-3 bg-[#F5F8FC] hover:bg-[#E5EAF1] text-[#263445] font-semibold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <IconEye stroke={1.75} className="w-3.5 h-3.5 text-[#4C97DB]" />
-                    <span>Détails</span>
-                  </button>
-
-                  {/* Quick Status cycle */}
-                  <button
-                    onClick={() => {
-                      setSelectedRoom(room);
-                      setIsEditStatusModalOpen(true);
-                    }}
-                    className="p-1.5 text-[#718096] hover:text-[#4C97DB] hover:bg-[#F5F8FC] rounded-lg transition-colors"
-                    title="Changer le statut"
-                  >
-                    <IconEdit stroke={1.75} className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        /* Table View */
-        <div className="bg-white rounded-2xl border border-[#E5EAF1] shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#F5F8FC] text-[#718096] border-b border-[#E5EAF1] uppercase font-semibold text-[11px]">
-                <tr>
-                  <th className="py-3 px-4">Chambre</th>
-                  <th className="py-3 px-4">Catégorie</th>
-                  <th className="py-3 px-4">Niveau</th>
-                  <th className="py-3 px-4">Tarif nuitée</th>
-                  <th className="py-3 px-4">Capacité</th>
-                  <th className="py-3 px-4">Statut</th>
-                  <th className="py-3 px-4">Occupant / Remarque</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E5EAF1] text-[#263445]">
-                {filteredRooms.map((room) => (
-                  <tr key={room.id} className="hover:bg-[#F5F8FC]/60 transition-colors">
-                    <td className="py-3 px-4 font-bold font-mono text-sm">
-                      Ch. {room.number}
-                    </td>
-                    <td className="py-3 px-4 font-medium">
+                  </td>
+                  <td className="py-3.5 px-4 font-medium">
+                    <span className="inline-flex items-center gap-1.5">
                       {room.category}
-                    </td>
-                    <td className="py-3 px-4 text-[#718096]">
-                      {room.floor}
-                    </td>
-                    <td className="py-3 px-4 font-mono font-semibold">
-                      {room.price.toLocaleString('fr-FR')} FCFA
-                    </td>
-                    <td className="py-3 px-4">
-                      {room.capacity} personnes
-                    </td>
-                    <td className="py-3 px-4">
-                      {getStatusBadge(room.status)}
-                    </td>
-                    <td className="py-3 px-4 max-w-xs truncate text-[#718096]">
-                      {room.currentGuest ? (
-                        <span className="font-semibold text-[#263445]">
-                          {room.currentGuest.name} (jusqu'au {room.currentGuest.checkOut})
+                      {room.category === 'Mini Suite (VIP)' && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                          VIP
                         </span>
-                      ) : room.notes ? (
-                        <span className="italic text-amber-700">{room.notes}</span>
-                      ) : (
-                        <span>—</span>
                       )}
-                    </td>
-                    <td className="py-3 px-4 text-right space-x-2">
-                      <button
-                        onClick={() => setSelectedRoom(room)}
-                        className="px-2.5 py-1 text-xs font-semibold text-[#4C97DB] hover:bg-[#4C97DB]/10 rounded-lg transition-colors"
-                      >
-                        Voir détails
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-[#718096]">
+                    {room.floor}
+                  </td>
+                  <td className="py-3.5 px-4 font-mono font-semibold">
+                    {room.price.toLocaleString('fr-FR')} FCFA
+                  </td>
+                  <td className="py-3.5 px-4 text-[#718096]">
+                    {room.capacity} pers.
+                  </td>
+                  <td className="py-3.5 px-4">
+                    {getStatusBadge(room.status)}
+                  </td>
+                  <td className="py-3.5 px-4 max-w-xs truncate text-[#718096]">
+                    {room.currentGuest ? (
+                      <div>
+                        <span className="font-semibold text-[#263445] flex items-center gap-1 truncate">
+                          <IconUser stroke={1.75} className="w-3.5 h-3.5 text-[#4C97DB] shrink-0" />
+                          {room.currentGuest.name}
+                        </span>
+                        <span className="text-[11px] text-[#718096] block">
+                          jusqu'au {room.currentGuest.checkOut}
+                          {room.currentGuest.folioBalance ? (
+                            <span className="font-mono text-amber-700 font-semibold ml-1.5">
+                              +{room.currentGuest.folioBalance.toLocaleString('fr-FR')} F
+                            </span>
+                          ) : null}
+                        </span>
+                      </div>
+                    ) : room.notes ? (
+                      <span className="italic text-amber-700">{room.notes}</span>
+                    ) : room.lastCleaned ? (
+                      <span className="text-[#718096]">Nettoyé : {room.lastCleaned}</span>
+                    ) : (
+                      <span className="text-[#718096]">—</span>
+                    )}
+                  </td>
+                  <td className="py-3.5 px-4 text-right space-x-2 whitespace-nowrap">
+                    <button
+                      onClick={() => setSelectedRoom(room)}
+                      className="px-2.5 py-1 text-xs font-semibold text-[#4C97DB] hover:bg-[#4C97DB]/10 rounded-lg transition-colors"
+                    >
+                      Détails
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedRoom(room);
+                        setIsEditStatusModalOpen(true);
+                      }}
+                      className="px-2.5 py-1 text-xs font-semibold text-[#718096] hover:text-[#4C97DB] hover:bg-[#F5F8FC] rounded-lg transition-colors"
+                    >
+                      Changer statut
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
 
       {/* MODAL 1: Détails de la chambre */}
       {selectedRoom && !isEditStatusModalOpen && (

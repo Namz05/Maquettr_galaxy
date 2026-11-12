@@ -1,173 +1,92 @@
 import {
   Room,
+  RoomCategory,
+  RoomFloor,
+  RoomStatus,
+  RoomGuest,
   Reservation,
   MenuItem,
   RestaurantSale,
   FinancialTransaction,
   StockItem,
   StockMovement,
-  CashRegisterClosure
+  CashRegisterClosure,
+  Employee
 } from '../types';
 
-// 10 chambres de l'établissement numérotées de 1 à 10 (Chambres 1 à 5 au RDC, 6 à 10 au 1er Étage)
-export const initialRooms: Room[] = [
-  // Rez-de-chaussée (Chambres 1 à 5)
-  {
-    id: 'room-1',
-    number: '1',
-    category: 'Standard',
-    floor: 'Rez-de-chaussée',
-    price: 45000,
-    capacity: 2,
-    status: 'Occupée',
-    features: ['Grand lit Queen', 'Climatisation', 'Wi-Fi', 'Douche à l’italienne', 'TV Écran Plat'],
-    currentGuest: {
-      name: 'Koffi Yao Mensah',
-      phone: '+225 07 48 92 11 34',
-      checkIn: '2026-11-08',
-      checkOut: '2026-11-12',
-      reservationRef: 'RES-2026-071',
-      folioBalance: 24500,
-    },
-    lastCleaned: '2026-11-08 11:30',
-  },
-  {
-    id: 'room-2',
-    number: '2',
-    category: 'Standard',
-    floor: 'Rez-de-chaussée',
-    price: 45000,
-    capacity: 2,
-    status: 'Occupée',
-    features: ['Grand lit Queen', 'Climatisation', 'Wi-Fi', 'Bureau de travail'],
-    currentGuest: {
-      name: 'Dr. Aminata Diallo',
-      phone: '+221 77 635 44 20',
-      checkIn: '2026-11-09',
-      checkOut: '2026-11-14',
-      reservationRef: 'RES-2026-078',
-      folioBalance: 12000,
-    },
-    lastCleaned: '2026-11-09 10:00',
-  },
-  {
-    id: 'room-3',
-    number: '3',
-    category: 'Standard',
-    floor: 'Rez-de-chaussée',
-    price: 45000,
-    capacity: 2,
-    status: 'Disponible',
-    features: ['Lits jumeaux', 'Climatisation', 'Wi-Fi', 'Vue jardin intérieur'],
-    lastCleaned: '2026-11-10 07:45',
-  },
-  {
-    id: 'room-4',
-    number: '4',
-    category: 'Standard',
-    floor: 'Rez-de-chaussée',
-    price: 45000,
-    capacity: 2,
-    status: 'Réservée',
-    features: ['Grand lit Queen', 'Climatisation', 'Wi-Fi'],
-    lastCleaned: '2026-11-09 16:00',
-    notes: 'Arrivée prévue à 14h30 pour M. Zhang Wei (RES-2026-089).',
-  },
-  {
-    id: 'room-5',
-    number: '5',
-    category: 'Mini Suite (VIP)',
-    floor: 'Rez-de-chaussée',
-    price: 75000,
-    capacity: 3,
-    status: 'Occupée',
-    features: ['Lit King Size', 'Salon privatif', 'Mini-bar', 'Baignoire balnéo', 'Machine Expresso', 'Coffre-fort'],
-    currentGuest: {
-      name: 'Hon. Marc-Aurèle Toure',
-      phone: '+33 6 42 19 88 50',
-      checkIn: '2026-11-07',
-      checkOut: '2026-11-11',
-      reservationRef: 'RES-2026-065',
-      folioBalance: 68000,
-    },
-    lastCleaned: '2026-11-10 09:15',
-  },
+// 70 chambres de l'établissement (numérotées de 1 à 70)
+const generateInitialRooms = (): Room[] => {
+  const rooms: Room[] = [];
+  const guestPool = [
+    { name: 'Koffi Yao Mensah', phone: '+225 07 48 92 11 34', folio: 24500 },
+    { name: 'Dr. Aminata Diallo', phone: '+221 77 635 44 20', folio: 12000 },
+    { name: 'Hon. Marc-Aurèle Toure', phone: '+33 6 42 19 88 50', folio: 68000 },
+    { name: 'M. Jean-Luc Bernard', phone: '+33 6 12 34 56 78', folio: 35000 },
+    { name: 'Famille Alassane Ouattara Jr', phone: '+225 01 02 03 04 05', folio: 42000 },
+    { name: 'Mme. Fatou Bamba', phone: '+225 05 12 34 56 78', folio: 18000 },
+    { name: 'Ing. Paul Essomba', phone: '+237 699 12 34 56', folio: 50000 },
+    { name: 'Mme. Claire Dubois', phone: '+33 7 89 01 23 45', folio: 15000 },
+    { name: 'M. Ibrahim Traore', phone: '+226 70 11 22 33', folio: 28000 },
+    { name: 'Dr. Samuel Mensah', phone: '+233 24 123 4567', folio: 32000 },
+  ];
 
-  // 1er Étage (Chambres 6 à 10)
-  {
-    id: 'room-6',
-    number: '6',
-    category: 'Mini Suite (VIP)',
-    floor: '1er Étage',
-    price: 75000,
-    capacity: 3,
-    status: 'Occupée',
-    features: ['Lit King Size', 'Balcon panoramique', 'Salon VIP', 'TV 55"', 'Mini-bar'],
-    currentGuest: {
-      name: 'M. Jean-Luc Bernard',
-      phone: '+33 6 12 34 56 78',
-      checkIn: '2026-11-05',
-      checkOut: '2026-11-15',
-      reservationRef: 'RES-2026-054',
-      folioBalance: 35000,
-    },
-    lastCleaned: '2026-11-09 14:00',
-  },
-  {
-    id: 'room-7',
-    number: '7',
-    category: 'Standard',
-    floor: '1er Étage',
-    price: 45000,
-    capacity: 2,
-    status: 'En nettoyage',
-    features: ['Lit Queen Size', 'Climatisation', 'Wi-Fi rapide', 'Douche'],
-    lastCleaned: '2026-11-10 10:15',
-    notes: 'Départ ce matin. Nettoyage et changement complet des draps.',
-  },
-  {
-    id: 'room-8',
-    number: '8',
-    category: 'Standard',
-    floor: '1er Étage',
-    price: 45000,
-    capacity: 2,
-    status: 'Disponible',
-    features: ['Grand lit double', 'Climatisation', 'Wi-Fi', 'Vue piscine'],
-    lastCleaned: '2026-11-10 08:30',
-  },
-  {
-    id: 'room-9',
-    number: '9',
-    category: 'Standard',
-    floor: '1er Étage',
-    price: 45000,
-    capacity: 1,
-    status: 'Hors service',
-    features: ['Lit simple large', 'Climatisation', 'Wi-Fi'],
-    lastCleaned: '2026-11-08 17:00',
-    notes: 'Maintenance préventive climatisation en cours.',
-  },
-  {
-    id: 'room-10',
-    number: '10',
-    category: 'Mini Suite (VIP)',
-    floor: '1er Étage',
-    price: 75000,
-    capacity: 4,
-    status: 'Occupée',
-    features: ['Lit King Size', 'Salon privatif', 'Terrasse', 'Mini-bar', 'Canapé convertible'],
-    currentGuest: {
-      name: 'Famille Alassane Ouattara Jr',
-      phone: '+225 01 02 03 04 05',
-      checkIn: '2026-11-08',
-      checkOut: '2026-11-14',
-      reservationRef: 'RES-2026-075',
-      folioBalance: 42000,
-    },
-    lastCleaned: '2026-11-09 11:20',
-  },
-];
+  for (let num = 1; num <= 70; num++) {
+    const isVip = num % 7 === 0 || num % 10 === 0;
+    const category: RoomCategory = isVip ? 'Mini Suite (VIP)' : 'Standard';
+    const floor: RoomFloor =
+      num <= 20 ? 'Rez-de-chaussée' : num <= 40 ? '1er Étage' : num <= 60 ? '2ème Étage' : '3ème Étage';
+    const price = isVip ? 75000 : 45000;
+    const capacity = isVip ? (num % 2 === 0 ? 4 : 3) : 2;
+
+    let status: RoomStatus = 'Disponible';
+    let currentGuest: RoomGuest | undefined = undefined;
+    let notes: string | undefined = undefined;
+
+    if (num % 13 === 0) {
+      status = 'Hors service';
+      notes = 'Entretien technique et climatisation';
+    } else if (num % 11 === 0) {
+      status = 'En nettoyage';
+      notes = 'Nettoyage et literie';
+    } else if (num % 9 === 0) {
+      status = 'Réservée';
+      notes = 'Arrivée prévue cet après-midi';
+    } else if (num % 3 !== 0) {
+      status = 'Occupée';
+      const guest = guestPool[(num * 3) % guestPool.length];
+      currentGuest = {
+        name: guest.name,
+        phone: guest.phone,
+        checkIn: '2026-11-08',
+        checkOut: '2026-11-13',
+        reservationRef: `RES-2026-${String(num + 100).padStart(3, '0')}`,
+        folioBalance: guest.folio,
+      };
+    } else {
+      status = 'Disponible';
+    }
+
+    rooms.push({
+      id: `room-${num}`,
+      number: String(num),
+      category,
+      floor,
+      price,
+      capacity,
+      status,
+      features: isVip
+        ? ['Lit King Size', 'Salon privatif', 'Mini-bar', 'TV 55"', 'Climatisation', 'Wi-Fi']
+        : ['Grand lit Queen', 'Climatisation', 'Wi-Fi', 'Douche', 'TV Écran Plat'],
+      currentGuest,
+      lastCleaned: '2026-11-10 08:30',
+      notes,
+    });
+  }
+
+  return rooms;
+};
+
+export const initialRooms: Room[] = generateInitialRooms();
 
 // Initial Reservations
 export const initialReservations: Reservation[] = [
@@ -988,5 +907,139 @@ export const initialStockMovements: StockMovement[] = [
     destinationLocation: 'Magasin',
     responsibleUser: 'Économe Principal',
     reason: 'Commande grossiste Solibra n° 9844.',
+  },
+];
+
+// Personnel & Ressources Humaines (RH)
+export const initialEmployees: Employee[] = [
+  {
+    id: 'emp-1',
+    matricule: 'RH-2024-001',
+    name: 'Kouassi Konan Yao',
+    role: 'Chef de Réception',
+    department: 'Réception',
+    phone: '+225 07 01 23 45 67',
+    email: 'k.konan@galaxyhotel.ci',
+    hireDate: '2023-03-15',
+    salary: 280000,
+    status: 'Actif',
+    shift: 'Matin (07h-15h)',
+  },
+  {
+    id: 'emp-2',
+    matricule: 'RH-2024-002',
+    name: 'Awa Sanogo',
+    role: 'Réceptionniste Polyvalente',
+    department: 'Réception',
+    phone: '+225 05 12 34 56 78',
+    email: 'a.sanogo@galaxyhotel.ci',
+    hireDate: '2023-09-01',
+    salary: 190000,
+    status: 'Actif',
+    shift: 'Soir (15h-23h)',
+  },
+  {
+    id: 'emp-3',
+    matricule: 'RH-2024-003',
+    name: 'Mamadou Bakayoko',
+    role: 'Veilleur de Nuit (Night Audit)',
+    department: 'Réception',
+    phone: '+225 01 44 55 66 77',
+    email: 'm.bakayoko@galaxyhotel.ci',
+    hireDate: '2024-01-10',
+    salary: 210000,
+    status: 'Actif',
+    shift: 'Nuit (23h-07h)',
+  },
+  {
+    id: 'emp-4',
+    matricule: 'RH-2024-004',
+    name: 'Adjoua Justine Koffi',
+    role: 'Gouvernante Générale',
+    department: 'Hébergement & Ménage',
+    phone: '+225 07 88 99 00 11',
+    email: 'j.koffi@galaxyhotel.ci',
+    hireDate: '2022-11-01',
+    salary: 260000,
+    status: 'Actif',
+    shift: 'Journée (08h-17h)',
+  },
+  {
+    id: 'emp-5',
+    matricule: 'RH-2024-005',
+    name: 'Fatoumata Traoré',
+    role: 'Femme de Chambre Sénior',
+    department: 'Hébergement & Ménage',
+    phone: '+225 05 66 77 88 99',
+    email: 'f.traore@galaxyhotel.ci',
+    hireDate: '2023-05-12',
+    salary: 160000,
+    status: 'Actif',
+    shift: 'Matin (07h-15h)',
+  },
+  {
+    id: 'emp-6',
+    matricule: 'RH-2024-006',
+    name: 'Sékou Oumar Cissé',
+    role: 'Chef Cuisinier Exécutif',
+    department: 'Cuisine',
+    phone: '+225 07 22 33 44 55',
+    email: 's.cisse@galaxyhotel.ci',
+    hireDate: '2023-01-15',
+    salary: 350000,
+    status: 'Actif',
+    shift: 'Journée (08h-17h)',
+  },
+  {
+    id: 'emp-7',
+    matricule: 'RH-2024-007',
+    name: 'Ange-Patrick Bado',
+    role: 'Chef Barman & Maître d’Hôtel',
+    department: 'Restaurant & Bar',
+    phone: '+225 01 77 88 99 00',
+    email: 'a.bado@galaxyhotel.ci',
+    hireDate: '2023-06-20',
+    salary: 220000,
+    status: 'Actif',
+    shift: 'Soir (15h-23h)',
+  },
+  {
+    id: 'emp-8',
+    matricule: 'RH-2024-008',
+    name: 'Marie-Paule N’Guessan',
+    role: 'Serveuse Restaurant',
+    department: 'Restaurant & Bar',
+    phone: '+225 05 99 00 11 22',
+    email: 'mp.nguessan@galaxyhotel.ci',
+    hireDate: '2024-02-01',
+    salary: 150000,
+    status: 'En congé',
+    shift: 'Matin (07h-15h)',
+  },
+  {
+    id: 'emp-9',
+    matricule: 'RH-2024-009',
+    name: 'Désiré Kaboré',
+    role: 'Technicien de Maintenance',
+    department: 'Sécurité & Technique',
+    phone: '+225 07 33 44 55 66',
+    email: 'd.kabore@galaxyhotel.ci',
+    hireDate: '2022-08-15',
+    salary: 230000,
+    status: 'Actif',
+    shift: 'Journée (08h-17h)',
+  },
+  {
+    id: 'emp-10',
+    matricule: 'RH-2024-010',
+    name: 'Pauline Diallo',
+    role: 'Responsable Financière & RH',
+    department: 'Direction',
+    phone: '+225 07 55 66 77 88',
+    email: 'direction.rh@galaxyhotel.ci',
+    hireDate: '2022-01-10',
+    salary: 450000,
+    status: 'Actif',
+    shift: 'Journée (08h-17h)',
   },
 ];
